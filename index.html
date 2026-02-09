@@ -3,31 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Detalle de San Valentín</title>
+<title>Te elijo a ti ❤️</title>
 <style>
   body {
+    margin: 0;
+    height: 100vh;
+    background: #ffe6e6;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    height: 100vh;
-    background: #ffe6e6;
-    font-family: 'Arial', sans-serif;
+    font-family: Arial, sans-serif;
     overflow: hidden;
+    perspective: 1000px;
+  }
+
+  .pokeball-container {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    cursor: pointer;
   }
 
   .pokeball {
+    width: 100%;
+    height: 100%;
     position: relative;
-    width: 150px;
-    height: 150px;
-    cursor: pointer;
-    transition: transform 0.2s;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
   }
 
   .pokeball .top {
     width: 100%;
     height: 50%;
-    background: red;
+    background: linear-gradient(to bottom, #ff1c1c, #cc0000);
     border: 5px solid black;
     border-bottom: 2px solid black;
     border-radius: 100px 100px 0 0;
@@ -35,7 +44,8 @@
     top: 0;
     left: 0;
     z-index: 2;
-    transition: transform 0.5s;
+    transform-origin: bottom center;
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2);
   }
 
   .pokeball .bottom {
@@ -49,26 +59,40 @@
     bottom: 0;
     left: 0;
     z-index: 1;
+    box-shadow: inset -5px 5px 15px rgba(0,0,0,0.1);
   }
 
   .pokeball .center {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
     background: white;
     border: 5px solid black;
     border-radius: 50%;
     transform: translate(-50%, -50%);
     z-index: 3;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
   }
 
   .message {
-    margin-top: 20px;
+    margin-top: 25px;
     text-align: center;
     font-size: 1.2em;
     display: none;
+    animation: fadeIn 1s forwards;
+  }
+
+  .message p:first-child {
+    font-weight: bold;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+  }
+
+  @keyframes fadeIn {
+    from {opacity:0;}
+    to {opacity:1;}
   }
 
   .hearts {
@@ -109,28 +133,48 @@
   }
 
   @keyframes floatUp {
-    0% { transform: translate(-50%, 0) scale(1) rotate(-45deg); opacity:1; }
-    100% { transform: translate(-50%, -150px) scale(0.8) rotate(-45deg); opacity:0; }
+    0% { transform: translate(0, 0) scale(1) rotate(-45deg); opacity:1; }
+    100% { transform: translate(var(--x, 0px), -200px) scale(0.7) rotate(-45deg); opacity:0; }
   }
 
   .kiss {
     position: absolute;
     font-size: 2em;
     animation: floatKiss 1.5s ease forwards;
+    pointer-events: none;
   }
 
   @keyframes floatKiss {
     0% { transform: translateY(0) scale(1); opacity:1; }
-    100% { transform: translateY(-100px) scale(0.5); opacity:0; }
+    100% { transform: translateY(-120px) scale(0.5); opacity:0; }
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #ff4d4d;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  button:hover {
+    transform: scale(1.1);
+    background-color: #ff1c1c;
   }
 </style>
 </head>
 <body>
 
-<div class="pokeball" id="pokeball">
-  <div class="top" id="top"></div>
-  <div class="bottom"></div>
-  <div class="center"></div>
+<div class="pokeball-container">
+  <div class="pokeball" id="pokeball">
+    <div class="top" id="top"></div>
+    <div class="bottom"></div>
+    <div class="center"></div>
+  </div>
 </div>
 
 <div class="message" id="message">
@@ -141,28 +185,36 @@
 
 <div class="hearts" id="hearts"></div>
 
+<!-- Sonidos -->
+<audio id="pokeballSound" src="pokeball.mp3"></audio>
+<audio id="kissSound" src="kiss.mp3"></audio>
+
 <script>
   const pokeball = document.getElementById('pokeball');
   const top = document.getElementById('top');
   const message = document.getElementById('message');
   const heartsContainer = document.getElementById('hearts');
   const kissButton = document.getElementById('kissButton');
+  const pokeballSound = document.getElementById('pokeballSound');
+  const kissSound = document.getElementById('kissSound');
 
   let opened = false;
 
   function createHeart() {
     const heart = document.createElement('div');
     heart.classList.add('heart');
-    heart.style.left = Math.random() * 100 - 50 + 'px';
+    heart.style.setProperty('--x', (Math.random()*200 - 100) + 'px');
     heartsContainer.appendChild(heart);
     setTimeout(() => heart.remove(), 2000);
   }
 
   function createKiss() {
+    kissSound.currentTime = 0;
+    kissSound.play();
     const kiss = document.createElement('div');
     kiss.classList.add('kiss');
-    kiss.style.left = Math.random() * 100 - 50 + 'px';
-    kiss.style.top = Math.random() * 50 + 'px';
+    kiss.style.left = (window.innerWidth/2 + (Math.random()*100 - 50)) + 'px';
+    kiss.style.top = (window.innerHeight/2 + (Math.random()*50 - 25)) + 'px';
     kiss.innerText = '💋';
     document.body.appendChild(kiss);
     setTimeout(() => kiss.remove(), 1500);
@@ -171,12 +223,12 @@
   function shakePokeball(times, interval, callback) {
     let count = 0;
     const shake = setInterval(() => {
-      pokeball.style.transform = 'rotate(15deg)';
-      setTimeout(() => pokeball.style.transform = 'rotate(-15deg)', 200);
+      pokeball.style.transform = 'rotateY(15deg)';
+      setTimeout(() => pokeball.style.transform = 'rotateY(-15deg)', 200);
       count++;
       if (count >= times) {
         clearInterval(shake);
-        pokeball.style.transform = 'rotate(0deg)';
+        pokeball.style.transform = 'rotateY(0deg)';
         callback();
       }
     }, interval);
@@ -184,18 +236,24 @@
 
   pokeball.addEventListener('click', () => {
     if (opened) return;
+
     shakePokeball(3, 2000, () => {
-      // abrir pokeball
-      top.style.transform = 'translateY(-75px) rotate(-45deg)';
+      pokeballSound.currentTime = 0;
+      pokeballSound.play(); // sonido al abrir
+
+      // abrir tapa 3D
+      top.style.transform = 'rotateX(-150deg) translateY(-90px)';
+      top.style.transition = 'transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+
       message.style.display = 'block';
 
-      // generar corazones cada 0.2s durante 2s
+      // corazones flotando
       let heartCount = 0;
       const heartInterval = setInterval(() => {
         createHeart();
         heartCount++;
-        if (heartCount >= 10) clearInterval(heartInterval);
-      }, 200);
+        if (heartCount >= 20) clearInterval(heartInterval);
+      }, 120);
 
       opened = true;
     });
