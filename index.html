@@ -15,7 +15,7 @@
     flex-direction: column;
     font-family: Arial, sans-serif;
     overflow: hidden;
-    perspective: 1000px; /* esencial para 3D */
+    perspective: 1000px;
   }
 
   .pokeball-container {
@@ -46,6 +46,7 @@
     transform-origin: bottom center;
     box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2);
     transition: transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    pointer-events: none; /* dejamos que el click pase al contenedor */
   }
 
   .bottom {
@@ -74,6 +75,7 @@
     transform: translate(-50%, -50%);
     z-index: 3;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    pointer-events: none; /* no bloquea el click */
   }
 
   .message {
@@ -169,8 +171,8 @@
 </head>
 <body>
 
-<div class="pokeball-container">
-  <div class="pokeball" id="pokeball">
+<div class="pokeball-container" id="pokeballContainer">
+  <div class="pokeball">
     <div class="top" id="top"></div>
     <div class="bottom"></div>
     <div class="center"></div>
@@ -186,7 +188,7 @@
 <div class="hearts" id="hearts"></div>
 
 <script>
-const pokeball = document.getElementById('pokeball');
+const pokeballContainer = document.getElementById('pokeballContainer');
 const top = document.getElementById('top');
 const message = document.getElementById('message');
 const heartsContainer = document.getElementById('hearts');
@@ -215,40 +217,27 @@ function createKiss() {
 function shakePokeball(times, interval, callback) {
   let count = 0;
   const shake = setInterval(() => {
-    pokeball.style.transform = 'rotateY(15deg)';
-    setTimeout(() => pokeball.style.transform = 'rotateY(-15deg)', 200);
+    pokeballContainer.style.transform = 'rotateY(15deg)';
+    setTimeout(() => pokeballContainer.style.transform = 'rotateY(-15deg)', 200);
     count++;
     if (count >= times) {
       clearInterval(shake);
-      pokeball.style.transform = 'rotateY(0deg)';
+      pokeballContainer.style.transform = 'rotateY(0deg)';
       callback();
     }
   }, interval);
 }
 
-pokeball.addEventListener('click', () => {
+pokeballContainer.addEventListener('click', () => {
   if (opened) return;
 
   shakePokeball(3, 2000, () => {
-    // abrir tapa 3D realista
-    top.style.transform = 'rotateX(-160deg)'; // menos translateY, más realista
-    top.style.transition = 'transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-
+    // abrir tapa
+    top.style.transform = 'rotateX(-160deg)';
     message.style.display = 'block';
 
     let heartCount = 0;
     const heartInterval = setInterval(() => {
       createHeart();
       heartCount++;
-      if (heartCount >= 20) clearInterval(heartInterval);
-    }, 120);
-
-    opened = true;
-  });
-});
-
-kissButton.addEventListener('click', createKiss);
-</script>
-
-</body>
-</html>
+      if (heartCount >
