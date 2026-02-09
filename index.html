@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Te elijo a ti ❤️</title>
+<title>Detalle de San Valentín</title>
 <style>
   body {
     margin: 0;
@@ -15,7 +15,7 @@
     flex-direction: column;
     font-family: Arial, sans-serif;
     overflow: hidden;
-    perspective: 1000px;
+    perspective: 1000px; /* esencial para 3D */
   }
 
   .pokeball-container {
@@ -30,10 +30,9 @@
     height: 100%;
     position: relative;
     transform-style: preserve-3d;
-    transition: transform 0.6s;
   }
 
-  .pokeball .top {
+  .top {
     width: 100%;
     height: 50%;
     background: linear-gradient(to bottom, #ff1c1c, #cc0000);
@@ -46,9 +45,10 @@
     z-index: 2;
     transform-origin: bottom center;
     box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2);
+    transition: transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
-  .pokeball .bottom {
+  .bottom {
     width: 100%;
     height: 50%;
     background: white;
@@ -62,7 +62,7 @@
     box-shadow: inset -5px 5px 15px rgba(0,0,0,0.1);
   }
 
-  .pokeball .center {
+  .center {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -133,8 +133,8 @@
   }
 
   @keyframes floatUp {
-    0% { transform: translate(0, 0) scale(1) rotate(-45deg); opacity:1; }
-    100% { transform: translate(var(--x, 0px), -200px) scale(0.7) rotate(-45deg); opacity:0; }
+    0% { transform: translate(0,0) scale(1) rotate(-45deg); opacity:1;}
+    100% { transform: translate(var(--x,0px), -200px) scale(0.7) rotate(-45deg); opacity:0;}
   }
 
   .kiss {
@@ -185,83 +185,69 @@
 
 <div class="hearts" id="hearts"></div>
 
-<!-- Sonidos -->
-<audio id="pokeballSound" src="pokeball.mp3"></audio>
-<audio id="kissSound" src="kiss.mp3"></audio>
-
 <script>
-  const pokeball = document.getElementById('pokeball');
-  const top = document.getElementById('top');
-  const message = document.getElementById('message');
-  const heartsContainer = document.getElementById('hearts');
-  const kissButton = document.getElementById('kissButton');
-  const pokeballSound = document.getElementById('pokeballSound');
-  const kissSound = document.getElementById('kissSound');
+const pokeball = document.getElementById('pokeball');
+const top = document.getElementById('top');
+const message = document.getElementById('message');
+const heartsContainer = document.getElementById('hearts');
+const kissButton = document.getElementById('kissButton');
 
-  let opened = false;
+let opened = false;
 
-  function createHeart() {
-    const heart = document.createElement('div');
-    heart.classList.add('heart');
-    heart.style.setProperty('--x', (Math.random()*200 - 100) + 'px');
-    heartsContainer.appendChild(heart);
-    setTimeout(() => heart.remove(), 2000);
-  }
+function createHeart() {
+  const heart = document.createElement('div');
+  heart.classList.add('heart');
+  heart.style.setProperty('--x', (Math.random()*200 - 100) + 'px');
+  heartsContainer.appendChild(heart);
+  setTimeout(() => heart.remove(), 2000);
+}
 
-  function createKiss() {
-    kissSound.currentTime = 0;
-    kissSound.play();
-    const kiss = document.createElement('div');
-    kiss.classList.add('kiss');
-    kiss.style.left = (window.innerWidth/2 + (Math.random()*100 - 50)) + 'px';
-    kiss.style.top = (window.innerHeight/2 + (Math.random()*50 - 25)) + 'px';
-    kiss.innerText = '💋';
-    document.body.appendChild(kiss);
-    setTimeout(() => kiss.remove(), 1500);
-  }
+function createKiss() {
+  const kiss = document.createElement('div');
+  kiss.classList.add('kiss');
+  kiss.style.left = (window.innerWidth/2 + (Math.random()*100 - 50)) + 'px';
+  kiss.style.top = (window.innerHeight/2 + (Math.random()*50 - 25)) + 'px';
+  kiss.innerText = '💋';
+  document.body.appendChild(kiss);
+  setTimeout(() => kiss.remove(), 1500);
+}
 
-  function shakePokeball(times, interval, callback) {
-    let count = 0;
-    const shake = setInterval(() => {
-      pokeball.style.transform = 'rotateY(15deg)';
-      setTimeout(() => pokeball.style.transform = 'rotateY(-15deg)', 200);
-      count++;
-      if (count >= times) {
-        clearInterval(shake);
-        pokeball.style.transform = 'rotateY(0deg)';
-        callback();
-      }
-    }, interval);
-  }
+function shakePokeball(times, interval, callback) {
+  let count = 0;
+  const shake = setInterval(() => {
+    pokeball.style.transform = 'rotateY(15deg)';
+    setTimeout(() => pokeball.style.transform = 'rotateY(-15deg)', 200);
+    count++;
+    if (count >= times) {
+      clearInterval(shake);
+      pokeball.style.transform = 'rotateY(0deg)';
+      callback();
+    }
+  }, interval);
+}
 
-  pokeball.addEventListener('click', () => {
-    if (opened) return;
+pokeball.addEventListener('click', () => {
+  if (opened) return;
 
-    shakePokeball(3, 2000, () => {
-      pokeballSound.currentTime = 0;
-      pokeballSound.play(); // sonido al abrir
+  shakePokeball(3, 2000, () => {
+    // abrir tapa 3D realista
+    top.style.transform = 'rotateX(-160deg)'; // menos translateY, más realista
+    top.style.transition = 'transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
 
-      // abrir tapa 3D
-      top.style.transform = 'rotateX(-150deg) translateY(-90px)';
-      top.style.transition = 'transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+    message.style.display = 'block';
 
-      message.style.display = 'block';
+    let heartCount = 0;
+    const heartInterval = setInterval(() => {
+      createHeart();
+      heartCount++;
+      if (heartCount >= 20) clearInterval(heartInterval);
+    }, 120);
 
-      // corazones flotando
-      let heartCount = 0;
-      const heartInterval = setInterval(() => {
-        createHeart();
-        heartCount++;
-        if (heartCount >= 20) clearInterval(heartInterval);
-      }, 120);
-
-      opened = true;
-    });
+    opened = true;
   });
+});
 
-  kissButton.addEventListener('click', () => {
-    createKiss();
-  });
+kissButton.addEventListener('click', createKiss);
 </script>
 
 </body>
