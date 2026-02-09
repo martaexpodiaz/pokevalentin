@@ -2,199 +2,209 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Te elijo a ti 💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detalle de San Valentín</title>
 <style>
   body {
-    margin: 0;
-    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #fce4ec;
-    font-family: Arial, sans-serif;
     flex-direction: column;
+    height: 100vh;
+    background: #ffe6e6;
+    font-family: 'Arial', sans-serif;
     overflow: hidden;
-    transition: background 1s ease;
   }
-  body.dark { background: #2b2b2b; }
 
   .pokeball {
-    width: 200px;
-    height: 200px;
     position: relative;
+    width: 150px;
+    height: 150px;
     cursor: pointer;
-    z-index: 2;
-  }
-  .top, .bottom {
-    width: 200px;
-    height: 100px;
-    position: absolute;
-    left: 0;
-    border: 8px solid black;
-    box-sizing: border-box;
-  }
-  .top {
-    top: 0;
-    background: #e53935;
-    border-bottom: none;
-    border-radius: 200px 200px 0 0;
-    transform-origin: top center; /* cambio aquí para abrir hacia atrás */
-    transition: transform 1s ease;
-    z-index: 3;
-  }
-  .bottom {
-    bottom: 0;
-    background: white;
-    border-top: none;
-    border-radius: 0 0 200px 200px;
-  }
-  .line {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    height: 8px;
-    background: black;
-    transform: translateY(-50%);
-    z-index: 2;
-  }
-  .button {
-    width: 40px;
-    height: 40px;
-    background: white;
-    border: 6px solid black;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 4;
-  }
-  .open .top { transform: rotateX(-120deg); } /* rotación hacia atrás */
-  .shake { animation: shake 0.6s; }
-  @keyframes shake {
-    0% { transform: rotate(0); }
-    25% { transform: rotate(5deg); }
-    50% { transform: rotate(-5deg); }
-    75% { transform: rotate(5deg); }
-    100% { transform: rotate(0); }
+    transition: transform 0.2s;
   }
 
-  .surprise {
-    display: none;
-    margin-top: 30px;
-    text-align: center;
-    max-width: 340px;
-    color: white;
+  .pokeball .top {
+    width: 100%;
+    height: 50%;
+    background: red;
+    border: 5px solid black;
+    border-bottom: 2px solid black;
+    border-radius: 100px 100px 0 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    transition: transform 0.5s;
+  }
+
+  .pokeball .bottom {
+    width: 100%;
+    height: 50%;
+    background: white;
+    border: 5px solid black;
+    border-top: 2px solid black;
+    border-radius: 0 0 100px 100px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
     z-index: 1;
   }
 
-  .heart {
-    position: fixed;
-    font-size: 22px;
-    animation: floatUp 2s ease forwards;
-  }
-  @keyframes floatUp {
-    from { transform: translateY(0); opacity: 1; }
-    to { transform: translateY(-120px); opacity: 0; }
+  .pokeball .center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30px;
+    height: 30px;
+    background: white;
+    border: 5px solid black;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
   }
 
-  button {
+  .message {
     margin-top: 20px;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 20px;
-    background: #ff80ab;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
+    text-align: center;
+    font-size: 1.2em;
+    display: none;
   }
-  button:hover { transform: scale(1.05); }
+
+  .hearts {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .heart {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: red;
+    transform: rotate(-45deg);
+    animation: floatUp 2s ease forwards;
+  }
+
+  .heart::before,
+  .heart::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: red;
+    border-radius: 50%;
+  }
+
+  .heart::before {
+    top: -10px;
+    left: 0;
+  }
+
+  .heart::after {
+    left: 10px;
+    top: 0;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translate(-50%, 0) scale(1) rotate(-45deg); opacity:1; }
+    100% { transform: translate(-50%, -150px) scale(0.8) rotate(-45deg); opacity:0; }
+  }
+
+  .kiss {
+    position: absolute;
+    font-size: 2em;
+    animation: floatKiss 1.5s ease forwards;
+  }
+
+  @keyframes floatKiss {
+    0% { transform: translateY(0) scale(1); opacity:1; }
+    100% { transform: translateY(-100px) scale(0.5); opacity:0; }
+  }
 </style>
 </head>
 <body>
 
-<div class="pokeball" id="ball">
-  <div class="top"></div>
-  <div class="line"></div>
-  <div class="button"></div>
+<div class="pokeball" id="pokeball">
+  <div class="top" id="top"></div>
   <div class="bottom"></div>
+  <div class="center"></div>
 </div>
 
-<div class="surprise" id="surprise">
-  <h2 id="title"></h2>
-  <p id="message"></p>
-  <button onclick="sendKiss()">💋 Te mando un besito virtual &lt;3</button>
+<div class="message" id="message">
+  <p>Te elijo a ti ❤️</p>
+  <p>Aunque estemos lejos, siempre eres mi persona favorita</p>
+  <button id="kissButton">Te mando un besito virtual 💋</button>
 </div>
 
-<audio id="captureSound">
-  <source src="https://themushroomkingdom.net/sounds/wav/pokemon_red_blue/pokemon-caught.wav" type="audio/wav">
-</audio>
+<div class="hearts" id="hearts"></div>
 
 <script>
-const titleText = "Te elijo a ti ❤️";
-const messageText = "Aunque estemos lejos, siempre estás conmigo. Feliz San Valentín 💕";
+  const pokeball = document.getElementById('pokeball');
+  const top = document.getElementById('top');
+  const message = document.getElementById('message');
+  const heartsContainer = document.getElementById('hearts');
+  const kissButton = document.getElementById('kissButton');
 
-function createHeart() {
-  const heart = document.createElement("div");
-  heart.className = "heart";
-  heart.innerHTML = "❤️";
-  heart.style.left = Math.random() * 100 + "vw";
-  heart.style.top = "65%";
-  document.body.appendChild(heart);
-  setTimeout(() => heart.remove(), 2000);
-}
+  let opened = false;
 
-function sendKiss() {
-  for (let i = 0; i < 10; i++) {
-    setTimeout(createHeart, i * 120);
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.style.left = Math.random() * 100 - 50 + 'px';
+    heartsContainer.appendChild(heart);
+    setTimeout(() => heart.remove(), 2000);
   }
-  alert("Besito enviado 💋❤️");
-}
 
-function typeWriter(element, text, speed) {
-  let i = 0;
-  element.innerHTML = "";
-  return new Promise(resolve => {
-    const interval = setInterval(() => {
-      element.innerHTML += text.charAt(i);
-      i++;
-      if (i === text.length) {
-        clearInterval(interval);
-        resolve();
+  function createKiss() {
+    const kiss = document.createElement('div');
+    kiss.classList.add('kiss');
+    kiss.style.left = Math.random() * 100 - 50 + 'px';
+    kiss.style.top = Math.random() * 50 + 'px';
+    kiss.innerText = '💋';
+    document.body.appendChild(kiss);
+    setTimeout(() => kiss.remove(), 1500);
+  }
+
+  function shakePokeball(times, interval, callback) {
+    let count = 0;
+    const shake = setInterval(() => {
+      pokeball.style.transform = 'rotate(15deg)';
+      setTimeout(() => pokeball.style.transform = 'rotate(-15deg)', 200);
+      count++;
+      if (count >= times) {
+        clearInterval(shake);
+        pokeball.style.transform = 'rotate(0deg)';
+        callback();
       }
-    }, speed);
+    }, interval);
+  }
+
+  pokeball.addEventListener('click', () => {
+    if (opened) return;
+    shakePokeball(3, 2000, () => {
+      // abrir pokeball
+      top.style.transform = 'translateY(-75px) rotate(-45deg)';
+      message.style.display = 'block';
+
+      // generar corazones cada 0.2s durante 2s
+      let heartCount = 0;
+      const heartInterval = setInterval(() => {
+        createHeart();
+        heartCount++;
+        if (heartCount >= 10) clearInterval(heartInterval);
+      }, 200);
+
+      opened = true;
+    });
   });
-}
 
-async function openBall() {
-  const ball = document.getElementById("ball");
-  const surprise = document.getElementById("surprise");
-  const title = document.getElementById("title");
-  const message = document.getElementById("message");
-  const sound = document.getElementById("captureSound");
-
-  for (let i = 0; i < 3; i++) {
-    ball.classList.remove("shake");
-    void ball.offsetWidth;
-    ball.classList.add("shake");
-    await new Promise(r => setTimeout(r, 2000));
-  }
-
-  ball.classList.add("open");
-  document.body.classList.add("dark");
-  surprise.style.display = "block";
-  sound.play();
-
-  for (let i = 0; i < 18; i++) {
-    setTimeout(createHeart, i * 150);
-  }
-
-  await typeWriter(title, titleText, 120);
-  await typeWriter(message, messageText, 70);
-}
-
-document.getElementById("ball").addEventListener("click", openBall);
+  kissButton.addEventListener('click', () => {
+    createKiss();
+  });
 </script>
+
 </body>
 </html>
